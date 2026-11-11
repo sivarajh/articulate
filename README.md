@@ -43,8 +43,8 @@ static host or sub-path. Host it over HTTPS so the microphone works.
 Two workflows live in `.github/workflows/`:
 
 - **Deploy web app** (`deploy.yml`) runs the unit tests and the build on every push. On the default branch it
-  also publishes the site to GitHub Pages, at `https://<owner>.github.io/<repo>/`. One-time setup: in the
-  repository's **Settings → Pages**, set **Source** to **GitHub Actions**.
+  also publishes the site to GitHub Pages, at `https://<owner>.github.io/<repo>/`. If the publish step ever
+  reports that Pages is not enabled, set **Source** to **GitHub Actions** under **Settings → Pages**.
 - **Build Android app** (`android.yml`) is started by hand from the Actions tab. It builds an installable APK
   of the mobile app and attaches it to the run as the `articulate-android` artifact. The APK is signed with the
   standard debug key: fine for your own phone, not accepted by Google Play.

@@ -1,7 +1,8 @@
 # Tests and builds the web app on every push, and publishes it to GitHub Pages when the
 # push is to the repository's default branch.
 #
-# One-time setup: in the repository's Settings -> Pages, set "Source" to "GitHub Actions".
+# If the publish job reports that Pages is not enabled, set "Source" to "GitHub Actions"
+# under the repository's Settings -> Pages.
 name: Deploy web app
 
 on:
