@@ -1,0 +1,10 @@
+{
+  "name": "Articulate",
+  "short_name": "Articulate",
+  "description": "Train yourself to speak clearly, concisely and confidently in any situation.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f9f9f7",
+  "theme_color": "#0b0b0b",
+  "icons": [{ "src": "./favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
