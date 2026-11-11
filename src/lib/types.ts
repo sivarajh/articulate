@@ -228,6 +228,13 @@ export interface AiFeedback {
   followUp: string;
 }
 
+/** Practice questions the AI coach wrote for a situation the learner described. */
+export interface Scenario {
+  title: string;
+  questions: string[];
+  framework: FrameworkId;
+}
+
 // ---------- persistence ----------
 
 export interface TakeRecord {

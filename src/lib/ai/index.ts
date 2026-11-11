@@ -1,10 +1,7 @@
 // Lazy front door to the AI coach, so the Anthropic SDK and schema library are only
 // downloaded when someone actually uses the coach.
 
-import type { AiFeedback, Analysis, Exercise } from '../types';
-import type { Scenario } from './coach';
-
-export type { Scenario };
+import type { AiFeedback, Analysis, Exercise, Scenario } from '../types';
 
 export async function coachTake(apiKey: string, exercise: Exercise, transcript: string, analysis: Analysis): Promise<AiFeedback> {
   const coach = await import('./coach');

@@ -1,0 +1,64 @@
+{
+  "expo": {
+    "name": "Articulate",
+    "slug": "articulate",
+    "scheme": "articulate",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.articulate.app"
+    },
+    "android": {
+      "package": "com.articulate.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#0b0b0b",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro",
+      "output": "single"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "Articulate listens while you practise so it can transcribe and score what you say.",
+          "speechRecognitionPermission": "Articulate turns your practice takes into text so it can give you feedback.",
+          "androidSpeechServicePackages": [
+            "com.google.android.googlequicksearchbox"
+          ]
+        }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": false,
+          "recordAudioAndroid": false,
+          "enableBackgroundPlayback": false
+        }
+      ],
+      "expo-font",
+      "expo-secure-store",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 160,
+          "resizeMode": "contain",
+          "backgroundColor": "#f9f9f7",
+          "dark": {
+            "backgroundColor": "#0d0d0d"
+          }
+        }
+      ]
+    ]
+  }
+}

@@ -114,7 +114,8 @@ export class VoiceAnalyzer {
   private bucketPeak = 0;
   private bucketIndex = 0;
 
-  constructor(sampleRate: number) {
+  /** @param sampleRate only needed when feeding raw samples with `process` */
+  constructor(sampleRate = 48000) {
     this.sampleRate = sampleRate;
   }
 
@@ -128,9 +129,17 @@ export class VoiceAnalyzer {
     return this.pauses.filter((p) => p.end - p.start >= minMs).length;
   }
 
-  /** @param t ms since the start of the take */
+  /** Feed one frame of raw audio. @param t ms since the start of the take */
   process(samples: Float32Array, t: number): void {
-    const db = rmsDb(samples);
+    this.processLevel(rmsDb(samples), t, (loud) => (loud ? detectPitch(samples, this.sampleRate) : null));
+  }
+
+  /**
+   * Feed a loudness reading in dBFS (about -60 for silence, 0 for full scale).
+   * Native speech recognisers report a volume level rather than raw audio, so this is
+   * the entry point there. `pitch` is asked for only when the frame counts as speech.
+   */
+  processLevel(db: number, t: number, pitch?: (loud: boolean) => number | null): void {
     const dt = Math.max(0, t - this.lastT);
     this.lastT = t;
 
@@ -162,7 +171,7 @@ export class VoiceAnalyzer {
       this.lastSpeech = t;
       this.speechMs += dt;
       this.voicedDb.push(db);
-      const hz = detectPitch(samples, this.sampleRate);
+      const hz = pitch?.(true) ?? null;
       if (hz != null) this.semitones.push(12 * Math.log2(hz / 100));
     } else if (this.firstSpeech != null && this.silenceStart == null) {
       this.silenceStart = t;

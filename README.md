@@ -6,9 +6,14 @@ You answer a real question out loud against a clock. The app transcribes you, me
 (pace, fillers, hedges, pauses, structure, vocal variety), marks the exact words in your transcript, tells you
 the one thing to fix first, and lets you go again. The second take is where the improvement happens.
 
-Everything runs in the browser. There is no account and no server.
+It comes as two apps that share one scoring engine:
 
-## Run it
+- a **web app** (React + Vite), in this folder, and
+- an **iOS and Android app** (React Native + Expo), in [`mobile/`](mobile/README.md).
+
+Both run entirely on the device. There is no account and no server.
+
+## Run the web app
 
 ```bash
 npm install
@@ -32,6 +37,17 @@ Other commands:
 
 The build is a plain static site with relative paths and hash routing, so `dist/` can be dropped onto any
 static host or sub-path. Host it over HTTPS so the microphone works.
+
+## Run the mobile app
+
+```bash
+cd mobile
+npm install
+npx expo run:android   # or: npx expo run:ios
+```
+
+It needs a development build, not Expo Go, because it uses the phone's native speech recogniser. See
+[`mobile/README.md`](mobile/README.md) for setup, what differs from the web app, and what has been tested.
 
 ## What you can practise
 
@@ -127,7 +143,7 @@ Everything else works without a key.
 
 ## How it is tested
 
-- `npm test` runs 84 unit tests: tokenising, every word rule, pace and pause metrics, read-aloud alignment,
+- `npm test` runs 85 unit tests: tokenising, every word rule, pace and pause metrics, read-aloud alignment,
   the voice analyser on synthetic audio, scoring on realistic strong and weak answers, goals, drill builders,
   the daily workout, streaks and levels.
 - Every practice mode has been run end to end in headless Chromium with a scripted stand-in for the speech
@@ -135,23 +151,29 @@ Everything else works without a key.
   dark mode, including the failure paths (no transcription, no microphone access, too little speech).
 - It has not been run against a real microphone and the real speech service in this environment, and the AI
   coach has only been exercised against a mocked API response.
+- The mobile app has been run the same way in a browser build, but not on a phone. Details in
+  [`mobile/README.md`](mobile/README.md).
 
 ## Project layout
 
 ```
 src/
-  lib/
+  lib/                                                        shared by web and mobile (pure TypeScript)
     analysis/     text.ts, flags.ts, metrics.ts, analyze.ts   transcript + timing -> scores and notes
-    speech/       voice.ts        loudness, pauses and pitch from raw samples
-                  transcriber.ts  Web Speech API wrapper (restarts, timestamps)
-                  capture.ts      one take: mic, recorder, transcriber, live state
     content/      prompts.ts, frameworks.ts, drills.ts, lessons.ts
-    ai/           coach.ts        Claude calls; index.ts loads it lazily
+    speech/       voice.ts        loudness, pauses and pitch from raw samples or volume levels
+    ai/           prompt.ts       the coach's instructions and what it is shown
+    progress.ts   streaks, levels, skill ratings
+    types.ts, format.ts, ticks.ts
+
+    speech/       transcriber.ts  Web Speech API wrapper (restarts, timestamps)      web only
+                  capture.ts      one take: mic, recorder, transcriber, live state
+    ai/           coach.ts        Claude calls through the SDK; index.ts loads it lazily
     store.ts      settings + history in localStorage
     audioStore.ts recordings in IndexedDB
-    progress.ts   streaks, levels, skill ratings
-  components/     charts, transcript, take report, shell
+  components/     charts, transcript, take report, shell                             web only
   pages/          Home, Practice, Session, Review, Progress, Learn, Settings
+mobile/           the React Native app; imports the shared files above as `@core`
 ```
 
 The analysis engine is pure functions over plain data, with no browser APIs, which is why it can be tested

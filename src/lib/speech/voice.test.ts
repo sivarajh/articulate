@@ -75,6 +75,27 @@ describe('VoiceAnalyzer', () => {
     expect(stats.levels.length).toBeGreaterThan(40);
   });
 
+  it('works from loudness readings alone, as on native platforms', () => {
+    const analyzer = new VoiceAnalyzer();
+    const script: [number, number][] = [
+      [800, -60], // quiet
+      [2500, -30], // speaking
+      [1200, -58], // pause
+      [2000, -28], // speaking
+      [600, -60],
+    ];
+    let t = 0;
+    for (const [duration, db] of script) {
+      for (const end = t + duration; t < end; t += 100) analyzer.processLevel(db, t);
+    }
+    const stats = analyzer.finish();
+    expect(stats.firstSpeechMs).toBe(800);
+    expect(stats.pauses).toEqual([{ start: 3300, end: 4500 }]);
+    expect(stats.lastSpeechMs).toBe(6400);
+    expect(stats.pitchStdSemitones).toBeNull();
+    expect(analyzer.pauseCount(600)).toBe(1);
+  });
+
   it('reports no speech in a silent room', () => {
     const stats = run([[3000, () => noise()]]);
     expect(stats.firstSpeechMs).toBeNull();
