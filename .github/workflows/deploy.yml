@@ -1,0 +1,60 @@
+# Tests and builds the web app on every push, and publishes it to GitHub Pages when the
+# push is to the repository's default branch.
+#
+# One-time setup: in the repository's Settings -> Pages, set "Source" to "GitHub Actions".
+name: Deploy web app
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One deployment at a time per branch; let a running deployment finish.
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Test and build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Type-check and build
+        run: npm run build
+
+      - name: Upload the site
+        if: github.ref_name == github.event.repository.default_branch
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    name: Publish to GitHub Pages
+    needs: build
+    if: github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v5
+
+      - id: deployment
+        uses: actions/deploy-pages@v5

@@ -38,6 +38,19 @@ Other commands:
 The build is a plain static site with relative paths and hash routing, so `dist/` can be dropped onto any
 static host or sub-path. Host it over HTTPS so the microphone works.
 
+## Deploying with GitHub Actions
+
+Two workflows live in `.github/workflows/`:
+
+- **Deploy web app** (`deploy.yml`) runs the unit tests and the build on every push. On the default branch it
+  also publishes the site to GitHub Pages, at `https://<owner>.github.io/<repo>/`. One-time setup: in the
+  repository's **Settings → Pages**, set **Source** to **GitHub Actions**.
+- **Build Android app** (`android.yml`) is started by hand from the Actions tab. It builds an installable APK
+  of the mobile app and attaches it to the run as the `articulate-android` artifact. The APK is signed with the
+  standard debug key: fine for your own phone, not accepted by Google Play.
+
+An iOS build needs an Apple developer account and signing credentials, so it is not automated here.
+
 ## Run the mobile app
 
 ```bash
